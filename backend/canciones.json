@@ -34,5 +34,11 @@
     "titulo": "Me prometo",
     "artista": "Antoñito Molina",
     "año": 2024
+  },
+  {
+    "id": 8,
+    "titulo": "Bailando en pijama",
+    "artista": "El arrebato",
+    "año": 2025
   }
 ]

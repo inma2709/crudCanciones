@@ -75,6 +75,8 @@ function leerCanciones() {
         const contenido = fs.readFileSync(ARCHIVO_CANCIONES, 'utf8');
         
         // Convertir el texto JSON en un array de JavaScript
+        // Express.json analiza (parsea) el cuerpo de las peticiones HTTP que lleguen desde el cliente (frontend).
+        // Aquí estás leyendo un archivo del disco duro, no una petición del cliente.
         const canciones = JSON.parse(contenido);
         
         console.log(`📖 Se leyeron ${canciones.length} canciones del archivo`);
@@ -86,41 +88,6 @@ function leerCanciones() {
     }
 }
 
-/**
- * GUARDAR CANCIONES - Guarda las canciones en el archivo JSON
- * ¿Qué hace? Toma un array de canciones y lo guarda en el archivo
- */
-function guardarCanciones(canciones) {
-    try {
-        // Convertir el array de JavaScript a texto JSON (bonito y formateado)
-        const contenidoJSON = JSON.stringify(canciones, null, 2);
-        
-        // Escribir el contenido al archivo
-        fs.writeFileSync(ARCHIVO_CANCIONES, contenidoJSON);
-        
-        console.log(`💾 Se guardaron ${canciones.length} canciones en el archivo`);
-        return true;
-    } catch (error) {
-        console.error('❌ Error al guardar canciones:', error.message);
-        return false;
-    }
-}
-
-/**
- * OBTENER SIGUIENTE ID - Calcula el próximo ID para una nueva canción
- * ¿Qué hace? Mira todas las canciones, encuentra el ID más alto, y suma 1
- */
-function obtenerSiguienteId(canciones) {
-    // Si no hay canciones, el primer ID es 1
-    if (canciones.length === 0) {
-        return 1;
-    }
-    
-    // Buscar el ID más alto y sumarle 1
-    const ids = canciones.map(cancion => cancion.id); // Extraer solo los IDs
-    const idMasAlto = Math.max(...ids); // Encontrar el mayor
-    return idMasAlto + 1;
-}
 
 // ===== PASO 5: RUTAS DEL SERVIDOR =====
 // Las rutas son como "direcciones" que el servidor puede manejar
@@ -201,6 +168,43 @@ app.post('/api/canciones', (peticion, respuesta) => {
         });
     }
 });
+
+/**
+ * GUARDAR CANCIONES - Guarda las canciones en el archivo JSON
+ * ¿Qué hace? Toma un array de canciones y lo guarda en el archivo
+ */
+function guardarCanciones(canciones) {
+    try {
+        // Convertir el array de JavaScript a texto JSON (bonito y formateado)
+        const contenidoJSON = JSON.stringify(canciones, null, 2);
+        
+        // Escribir el contenido al archivo
+        fs.writeFileSync(ARCHIVO_CANCIONES, contenidoJSON);
+        
+        console.log(`💾 Se guardaron ${canciones.length} canciones en el archivo`);
+        return true;
+    } catch (error) {
+        console.error('❌ Error al guardar canciones:', error.message);
+        return false;
+    }
+}
+
+/**
+ * OBTENER SIGUIENTE ID - Calcula el próximo ID para una nueva canción
+ * ¿Qué hace? Mira todas las canciones, encuentra el ID más alto, y suma 1
+ */
+function obtenerSiguienteId(canciones) {
+    // Si no hay canciones, el primer ID es 1
+    if (canciones.length === 0) {
+        return 1;
+    }
+    
+    // Buscar el ID más alto y sumarle 1
+    const ids = canciones.map(cancion => cancion.id); // Extraer solo los IDs
+    const idMasAlto = Math.max(...ids); // Encontrar el mayor
+    return idMasAlto + 1;
+}
+
 
 /**
  * RUTA: PUT /api/canciones/:id
