@@ -9,8 +9,8 @@
             --bg: #fff;
             --text: #232323;
             --muted: #666;
-            --primary: #E44D26;
-            --primary-2: #F16529;
+            --primary: #d155b6;
+            --primary-2: #1d9eb5;
             --ok: #1b8a5a;
             --warn: #c77d00;
             --err: #b91c1c;
@@ -963,6 +963,420 @@ function mostrarCancionesEnPantalla(canciones) {
             </details>
         </section>
 
+        <!-- Sección JSON: La Piedra Angular -->
+        <section class="card">
+            <h2>🧩 JSON, express.json(), parse() y stringify(): Los Pilares del Intercambio de Datos</h2>
+            
+            <div class="important">
+                <h4>🎯 Conceptos Fundamentales que Debes Dominar:</h4>
+                <p>Estos tres elementos son la <strong>columna vertebral</strong> de cualquier aplicación web moderna, incluyendo cuando trabajas con bases de datos.</p>
+            </div>
+
+            <details open>
+                <summary>🔧 express.json(): El Intérprete de Peticiones HTTP</summary>
+                
+                <div class="technical-note">
+                    <h4>¿Qué hace exactamente express.json()?</h4>
+                    <p>Es un <strong>middleware</strong> que actúa como un "traductor automático" para las peticiones HTTP que llegan al servidor.</p>
+                </div>
+
+                <div class="code-comparison">
+                    <div>
+                        <h4>🚫 Sin express.json()</h4>
+                        <pre class="backend-code"><code>app.post('/api/canciones', (req, res) => {
+    console.log(req.body); // undefined ❌
+    
+    // Tendríamos que parsear manualmente:
+    let rawData = '';
+    req.on('data', chunk => {
+        rawData += chunk;
+    });
+    req.on('end', () => {
+        try {
+            const datos = JSON.parse(rawData); // Manual parsing
+            // Ahora sí podemos usar los datos
+        } catch (error) {
+            // Manejar errores de parsing
+        }
+    });
+});</code></pre>
+                    </div>
+
+                    <div>
+                        <h4>✅ Con express.json()</h4>
+                        <pre class="backend-code"><code>// Configuración una sola vez
+app.use(express.json());
+
+app.post('/api/canciones', (req, res) => {
+    // ¡req.body ya es un objeto JavaScript! ✨
+    console.log(req.body); // { titulo: "...", artista: "..." }
+    
+    const { titulo, artista, año } = req.body; // Funciona perfectamente
+    
+    // Podemos usar los datos inmediatamente
+});</code></pre>
+                    </div>
+                </div>
+
+                <div class="note">
+                    <h4>🔍 Detalles Técnicos:</h4>
+                    <ul>
+                        <li><strong>Cuándo actúa:</strong> Solo en peticiones POST, PUT, PATCH (que envían datos en el body)</li>
+                        <li><strong>Content-Type requerido:</strong> "application/json" en el header</li>
+                        <li><strong>Límite de tamaño:</strong> Por defecto 100kb (configurable)</li>
+                        <li><strong>Qué NO hace:</strong> No lee archivos del sistema, solo peticiones HTTP</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>📝 JSON.parse(): El Deserializador</summary>
+                
+                <div class="technical-note">
+                    <h4>🎯 Función: Convertir texto JSON → Objeto JavaScript</h4>
+                    <p>Toma un <strong>string</strong> con formato JSON y lo convierte en un objeto/array que JavaScript puede manipular.</p>
+                </div>
+
+                <div class="code-comparison">
+                    <div>
+                        <h4>📁 Leyendo Archivos</h4>
+                        <pre class="backend-code"><code>// server.js
+function leerCanciones() {
+    try {
+        // fs.readFileSync() devuelve STRING
+        const contenidoTexto = fs.readFileSync('canciones.json', 'utf8');
+        console.log(typeof contenidoTexto); // "string"
+        console.log(contenidoTexto); 
+        // '[{"id":1,"titulo":"Bohemian Rhapsody",...}]'
+        
+        // JSON.parse() convierte string → array/object
+        const cancionesArray = JSON.parse(contenidoTexto);
+        console.log(typeof cancionesArray); // "object"
+        console.log(Array.isArray(cancionesArray)); // true
+        
+        return cancionesArray; // Ahora podemos usar .push(), .filter(), etc.
+    } catch (error) {
+        console.error('Error parsing JSON:', error);
+        return []; // Array vacío si falla
+    }
+}</code></pre>
+                    </div>
+
+                    <div>
+                        <h4>🌐 Respuestas de APIs</h4>
+                        <pre class="frontend-code"><code>// script.js
+async function obtenerTodasLasCanciones() {
+    const respuesta = await fetch(URL_API);
+    
+    // respuesta.text() devolvería STRING
+    const textoJSON = await respuesta.text();
+    console.log(typeof textoJSON); // "string"
+    
+    // Pero response.json() hace JSON.parse() automáticamente
+    const datosObjeto = JSON.parse(textoJSON);
+    // Equivale a: await respuesta.json()
+    
+    console.log(typeof datosObjeto); // "object"
+    return datosObjeto;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="error-handling">
+                    <h4>⚠️ Errores Comunes con JSON.parse():</h4>
+                    <pre><code>// ❌ JSON inválido
+JSON.parse('{nombre: "Juan"}'); // Error: falta comillas en "nombre"
+
+// ❌ String vacío
+JSON.parse(''); // Error: Unexpected end of JSON input
+
+// ❌ undefined o null
+JSON.parse(undefined); // Error: Unexpected token u
+
+// ✅ Siempre usar try-catch
+try {
+    const datos = JSON.parse(contenidoArchivo);
+    return datos;
+} catch (error) {
+    console.error('JSON inválido:', error.message);
+    return null; // O valor por defecto
+}</code></pre>
+                </div>
+            </details>
+
+            <details>
+                <summary>💾 JSON.stringify(): El Serializador</summary>
+                
+                <div class="technical-note">
+                    <h4>🎯 Función: Convertir Objeto JavaScript → String JSON</h4>
+                    <p>Toma un objeto/array de JavaScript y lo convierte en texto JSON para guardarlo o enviarlo.</p>
+                </div>
+
+                <div class="code-comparison">
+                    <div>
+                        <h4>💾 Guardando en Archivos</h4>
+                        <pre class="backend-code"><code>// server.js
+function guardarCanciones(cancionesArray) {
+    try {
+        // cancionesArray es un Array de JavaScript
+        console.log(typeof cancionesArray); // "object"
+        console.log(Array.isArray(cancionesArray)); // true
+        
+        // JSON.stringify() convierte array → string
+        const textoJSON = JSON.stringify(cancionesArray, null, 2);
+        console.log(typeof textoJSON); // "string"
+        console.log(textoJSON);
+        /*
+        [
+          {
+            "id": 1,
+            "titulo": "Bohemian Rhapsody",
+            "artista": "Queen",
+            "año": 1975
+          }
+        ]
+        */
+        
+        // fs.writeFileSync() requiere STRING
+        fs.writeFileSync('canciones.json', textoJSON);
+        return true;
+    } catch (error) {
+        console.error('Error stringifying JSON:', error);
+        return false;
+    }
+}</code></pre>
+                    </div>
+
+                    <div>
+                        <h4>📡 Enviando por HTTP</h4>
+                        <pre class="frontend-code"><code>// script.js
+async function crearNuevaCancion(datosCancion) {
+    // datosCancion es un objeto JavaScript
+    console.log(typeof datosCancion); // "object"
+    console.log(datosCancion);
+    // { titulo: "Mi canción", artista: "Artista", año: 2024 }
+    
+    const respuesta = await fetch(URL_API, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json' // ¡Importante!
+        },
+        // JSON.stringify() convierte objeto → string
+        body: JSON.stringify(datosCancion)
+        // HTTP solo puede enviar texto, no objetos
+    });
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="technical-note">
+                    <h4>🔧 Parámetros de JSON.stringify():</h4>
+                    <pre><code>JSON.stringify(value, replacer, space)
+
+// value: el objeto a convertir
+// replacer: función/array para filtrar propiedades (opcional)
+// space: número de espacios para indentación (opcional)
+
+// Ejemplos:
+JSON.stringify(obj);           // Compacto (sin espacios)
+JSON.stringify(obj, null, 2);  // Con indentación de 2 espacios
+JSON.stringify(obj, ['id', 'titulo']); // Solo propiedades específicas</code></pre>
+                </div>
+            </details>
+
+            <details>
+                <summary>🗄️ JSON y Bases de Datos: El Futuro de tu Aplicación</summary>
+                
+                <div class="important">
+                    <h4>🚀 ¿Cómo Cambia con Bases de Datos?</h4>
+                    <p>Cuando migres de archivos JSON a bases de datos (MongoDB, PostgreSQL, MySQL), estos conceptos siguen siendo <strong>fundamentales</strong>.</p>
+                </div>
+
+                <h4>📊 Con MongoDB (Base de Datos NoSQL):</h4>
+                <div class="tech-explanation">
+                    <pre><code>// MongoDB maneja objetos JavaScript nativamente
+const { MongoClient } = require('mongodb');
+
+app.post('/api/canciones', async (req, res) => {
+    // express.json() sigue parseando req.body ✅
+    const { titulo, artista, año } = req.body;
+    
+    const nuevaCancion = { titulo, artista, año };
+    
+    // MongoDB almacena directamente el objeto (internamente usa BSON)
+    const resultado = await db.collection('canciones').insertOne(nuevaCancion);
+    
+    res.json({ exito: true, datos: resultado });
+    // ❌ NO necesitas JSON.stringify() para MongoDB
+});
+
+app.get('/api/canciones', async (req, res) => {
+    // MongoDB devuelve objetos JavaScript directamente
+    const canciones = await db.collection('canciones').find().toArray();
+    
+    res.json({ exito: true, datos: canciones });
+    // ❌ NO necesitas JSON.parse() para MongoDB
+});</code></pre>
+                </div>
+
+                <h4>🐘 Con PostgreSQL/MySQL (Bases de Datos SQL):</h4>
+                <div class="tech-explanation">
+                    <pre><code>// Con bases SQL, a veces necesitas JSON.stringify/parse para campos JSON
+const { Pool } = require('pg'); // PostgreSQL
+
+app.post('/api/canciones', async (req, res) => {
+    // express.json() sigue parseando req.body ✅
+    const { titulo, artista, año, metadatos } = req.body;
+    
+    // Si 'metadatos' es un objeto complejo, stringify para SQL
+    const metadatosJSON = JSON.stringify(metadatos);
+    
+    const query = 'INSERT INTO canciones (titulo, artista, año, metadatos) VALUES ($1, $2, $3, $4)';
+    await pool.query(query, [titulo, artista, año, metadatosJSON]);
+});
+
+app.get('/api/canciones', async (req, res) => {
+    const result = await pool.query('SELECT * FROM canciones');
+    
+    // Parsear campos JSON de la base de datos
+    const canciones = result.rows.map(row => ({
+        ...row,
+        metadatos: JSON.parse(row.metadatos) // Parse campos JSON
+    }));
+    
+    res.json({ exito: true, datos: canciones });
+});</code></pre>
+                </div>
+
+                <h4>🔄 ORMs y el Manejo Automático:</h4>
+                <div class="tech-explanation">
+                    <pre><code>// Con Sequelize (ORM para SQL)
+const Cancion = sequelize.define('Cancion', {
+    titulo: DataTypes.STRING,
+    artista: DataTypes.STRING,
+    año: DataTypes.INTEGER,
+    metadatos: DataTypes.JSON // Manejo automático de JSON
+});
+
+app.post('/api/canciones', async (req, res) => {
+    // express.json() sigue siendo necesario ✅
+    const nuevaCancion = await Cancion.create(req.body);
+    // Sequelize maneja stringify/parse automáticamente ✨
+    
+    res.json({ exito: true, datos: nuevaCancion });
+});</code></pre>
+                </div>
+
+                <div class="note">
+                    <h4>📋 Resumen: JSON en el Ecosistema de Datos</h4>
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                        <tr style="background: var(--primary); color: white;">
+                            <th style="padding: 10px; border: 1px solid var(--border);">Escenario</th>
+                            <th style="padding: 10px; border: 1px solid var(--border);">express.json()</th>
+                            <th style="padding: 10px; border: 1px solid var(--border);">JSON.parse()</th>
+                            <th style="padding: 10px; border: 1px solid var(--border);">JSON.stringify()</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid var(--border);"><strong>Archivos JSON</strong></td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">✅ Siempre</td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">✅ Para leer</td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">✅ Para escribir</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid var(--border);"><strong>MongoDB</strong></td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">✅ Siempre</td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">❌ Automático</td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">❌ Automático</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid var(--border);"><strong>SQL + JSON fields</strong></td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">✅ Siempre</td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">⚠️ Para campos JSON</td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">⚠️ Para campos JSON</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid var(--border);"><strong>ORMs (Sequelize, etc.)</strong></td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">✅ Siempre</td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">❌ Automático</td>
+                            <td style="padding: 10px; border: 1px solid var(--border);">❌ Automático</td>
+                        </tr>
+                    </table>
+                </div>
+            </details>
+
+            <details>
+                <summary>🎯 Ejercicio Práctico: Flujo Completo de Datos</summary>
+                
+                <div class="technical-note">
+                    <h4>🔄 Sigue el Dato: De Frontend a Archivo y Vuelta</h4>
+                    <p>Veamos paso a paso cómo viaja un dato desde el formulario hasta el archivo JSON:</p>
+                </div>
+
+                <div class="flow">
+<strong>FLUJO COMPLETO - CREAR CANCIÓN:</strong>
+
+1) 👤 <span class="ok">USUARIO</span> escribe en formulario:
+   titulo: "Imagine", artista: "John Lennon", año: 1971
+   → Tipo: HTML form elements (strings)
+
+2) 🌐 <span class="warn">FRONTEND</span> captura con JavaScript:
+   const datosCancion = { titulo, artista, año: parseInt(año) }
+   → Tipo: Objeto JavaScript
+
+3) 📡 <span class="ok">HTTP REQUEST</span> - fetch() + JSON.stringify():
+   body: '{"titulo":"Imagine","artista":"John Lennon","año":1971}'
+   → Tipo: String JSON (lo que viaja por la red)
+
+4) 🖥️ <span class="warn">EXPRESS.JSON()</span> parsea automáticamente:
+   req.body = { titulo: "Imagine", artista: "John Lennon", año: 1971 }
+   → Tipo: Objeto JavaScript (otra vez)
+
+5) 📁 <span class="ok">BACKEND</span> lee archivo con fs.readFileSync():
+   contenido = '[{"id":1,...}]'  ← String del archivo
+   → Tipo: String JSON
+
+6) 🔄 <span class="warn">JSON.PARSE()</span> convierte a array:
+   canciones = [{ id: 1, ... }]
+   → Tipo: Array JavaScript
+
+7) ➕ <span class="ok">MANIPULACIÓN</span> - agregar nueva canción:
+   canciones.push({ id: 2, titulo: "Imagine", ... })
+   → Tipo: Array JavaScript (modificado)
+
+8) 💾 <span class="warn">JSON.STRINGIFY()</span> prepara para archivo:
+   textoJSON = '[{"id":1,...},{"id":2,"titulo":"Imagine",...}]'
+   → Tipo: String JSON
+
+9) 📁 <span class="ok">FS.WRITEFILESYNC()</span> guarda en disco:
+   canciones.json ← String JSON escrito al archivo
+   → Tipo: Archivo de texto
+
+10) 📡 <span class="warn">RESPUESTA HTTP</span> - res.json():
+    '{"exito":true,"datos":{...},"mensaje":"..."}'
+    → Tipo: String JSON (respuesta HTTP)
+
+11) 🌐 <span class="ok">FRONTEND</span> recibe con response.json():
+    datos = { exito: true, datos: {...}, mensaje: "..." }
+    → Tipo: Objeto JavaScript
+
+12) 🎨 <span class="warn">DOM UPDATE</span> - mostrar en pantalla:
+    HTML actualizado con la nueva canción
+    → Tipo: Elementos HTML visibles
+                </div>
+
+                <div class="important">
+                    <h4>💡 Puntos Clave del Flujo:</h4>
+                    <ul>
+                        <li><strong>3 conversiones críticas:</strong> Object→String→Object→String→Object</li>
+                        <li><strong>express.json() actúa solo en paso 4</strong> (peticiones HTTP entrantes)</li>
+                        <li><strong>JSON.parse() en paso 6</strong> (archivos) y paso 11 (response.json())</li>
+                        <li><strong>JSON.stringify() en paso 3</strong> (envío) y paso 8 (archivo)</li>
+                        <li><strong>HTTP siempre transporta texto</strong>, nunca objetos JavaScript</li>
+                    </ul>
+                </div>
+            </details>
+        </section>
+
         <!-- FAQ Técnico -->
         <section class="card">
             <h2>🤔 FAQ Técnico para Desarrolladores</h2>
@@ -1074,6 +1488,264 @@ function eliminarCancionOptimistic(id) {
                     <li>Migrar a <strong>TypeScript</strong> para type safety</li>
                 </ol>
             </div>
+        </section>
+
+        <!-- Roadmap de Evolución -->
+        <section class="card">
+            <h2>🛣️ Roadmap: ¿Cuál es el Paso Natural Después de Esto?</h2>
+            
+            <div class="important">
+                <h4>🎯 Has Construido una Base Sólida</h4>
+                <p>Dominar este CRUD con archivos JSON te ha dado los <strong>fundamentos universales</strong> del desarrollo web. Ahora tienes varias rutas de evolución natural:</p>
+            </div>
+
+            <div class="sequence-diagram">
+                <h3>📈 Progresión Recomendada (De Menor a Mayor Complejidad)</h3>
+                
+                <div class="flow-container">
+                    <div class="step-box">
+                        <h4>NIVEL 1</h4>
+                        <p>✅ CRUD con JSON</p>
+                        <small>(Actual)</small>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="step-box">
+                        <h4>NIVEL 2</h4>
+                        <p>🗄️ Migrar a DB</p>
+                        <small>(MongoDB)</small>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="step-box">
+                        <h4>NIVEL 3</h4>
+                        <p>🔐 Autenticación</p>
+                        <small>(JWT/Sessions)</small>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="step-box">
+                        <h4>NIVEL 4</h4>
+                        <p>⚛️ Frontend Framework</p>
+                        <small>(React)</small>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <details open>
+                <summary>🗄️ PASO 1: Migrar a Base de Datos </summary>
+                
+                <div class="technical-note">
+                    <h4>🎯 Objetivo: Reemplazar canciones.json con una base de datos real</h4>
+                    <p>Este es el <strong>paso más natural</strong> porque mantiene toda tu lógica actual, solo cambias dónde guardas los datos.</p>
+                </div>
+
+                <h4>🍃 Opción A: MongoDB (NoSQL) - Más Fácil</h4>
+                <div class="code-comparison">
+                    <div>
+                        <h5>❌ Código Actual (JSON)</h5>
+                        <pre class="backend-code"><code>function leerCanciones() {
+    const contenido = fs.readFileSync('canciones.json', 'utf8');
+    return JSON.parse(contenido);
+}
+
+function guardarCanciones(canciones) {
+    const contenidoJSON = JSON.stringify(canciones, null, 2);
+    fs.writeFileSync('canciones.json', contenidoJSON);
+}</code></pre>
+                    </div>
+
+                    <div>
+                        <h5>✅ Nuevo Código (MongoDB)</h5>
+                        <pre class="backend-code"><code>const { MongoClient } = require('mongodb');
+
+async function leerCanciones() {
+    return await db.collection('canciones').find().toArray();
+}
+
+async function guardarCancion(cancion) {
+    return await db.collection('canciones').insertOne(cancion);
+}</code></pre>
+                    </div>
+                </div>
+
+                <h4>🐘 Opción B: PostgreSQL (SQL) - Más Estructurado</h4>
+                <div class="tech-explanation">
+                    <pre><code>-- Crear tabla
+CREATE TABLE canciones (
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    artista VARCHAR(255) NOT NULL,
+    año INTEGER NOT NULL
+);
+
+-- Tu JavaScript queda muy similar
+const { Pool } = require('pg');
+const pool = new Pool({ connectionString: 'postgresql://...' });
+
+async function leerCanciones() {
+    const result = await pool.query('SELECT * FROM canciones');
+    return result.rows;
+}</code></pre>
+                </div>
+
+                <div class="note">
+                    <h4>✨ Ventajas Inmediatas:</h4>
+                    <ul>
+                        <li><strong>Concurrencia:</strong> Multiple usuarios simultáneos sin corrupción</li>
+                        <li><strong>Escalabilidad:</strong> Millones de canciones sin problemas</li>
+                        <li><strong>Queries:</strong> Buscar por artista, año, etc.</li>
+                        <li><strong>Backup automático:</strong> No perder datos si se va la luz</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>🔐 PASO 2: Añadir Autenticación y Autorización </summary>
+                
+                <div class="technical-note">
+                    <h4>🎯 Objetivo: Solo usuarios registrados pueden crear/editar/eliminar</h4>
+                    <p>Agregar sistema de login, registro y permisos usando JWT o sesiones.</p>
+                </div>
+
+                <h4>🔑 Funcionalidades a Implementar:</h4>
+                <div class="tech-explanation">
+                    <pre><code>// Nuevos endpoints de autenticación
+POST /api/auth/register    // Registro de usuario
+POST /api/auth/login       // Login
+POST /api/auth/logout      // Logout
+GET  /api/auth/profile     // Datos del usuario actual
+
+// Middleware de protección
+function requireAuth(req, res, next) {
+    const token = req.headers.authorization;
+    if (!token) return res.status(401).json({ error: 'Token requerido' });
+    
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        res.status(401).json({ error: 'Token inválido' });
+    }
+}
+
+// Proteger rutas existentes
+app.post('/api/canciones', requireAuth, async (req, res) => {
+    // Solo usuarios autenticados pueden crear canciones
+    const nuevaCancion = { ...req.body, usuarioId: req.user.id };
+    // ... resto de la lógica
+});</code></pre>
+                </div>
+
+                <h4>🎨 Cambios en el Frontend:</h4>
+                <div class="tech-explanation">
+                    <pre><code>// Nuevo formulario de login
+async function login(email, password) {
+    const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    localStorage.setItem('token', data.token); // Guardar token
+}
+
+// Incluir token en todas las peticiones
+async function crearNuevaCancion(datosCancion) {
+    const token = localStorage.getItem('token');
+    const respuesta = await fetch(URL_API, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` // Incluir token
+        },
+        body: JSON.stringify(datosCancion)
+    });
+}</code></pre>
+                </div>
+            </details>
+
+            <details>
+                <summary>⚛️ PASO 3: Migrar Frontend a React</summary>
+                
+                <div class="technical-note">
+                    <h4>🎯 Objetivo: UI más dinámica y mantenible</h4>
+                    <p>Tu JavaScript vanilla actual te ha preparado perfectamente para entender frameworks.</p>
+                </div>
+
+                <h4>⚛️ Con React:</h4>
+                <div class="code-comparison">
+                    <div>
+                        <h5>❌ JavaScript Vanilla Actual</h5>
+                        <pre class="frontend-code"><code>function mostrarCancionesEnPantalla(canciones) {
+    let htmlCompleto = '';
+    canciones.forEach(cancion => {
+        htmlCompleto += `
+            &lt;div class="cancion-item"&gt;
+                &lt;h3&gt;${cancion.titulo}&lt;/h3&gt;
+                &lt;p&gt;${cancion.artista}&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+    });
+    listaCanciones.innerHTML = htmlCompleto;
+}</code></pre>
+                    </div>
+
+                    <div>
+                        <h5>✅ React (Más Declarativo)</h5>
+                        <pre class="frontend-code"><code>function ListaCanciones({ canciones }) {
+    return (
+        &lt;div&gt;
+            {canciones.map(cancion =&gt; (
+                &lt;CancionItem 
+                    key={cancion.id} 
+                    cancion={cancion} 
+                /&gt;
+            ))}
+        &lt;/div&gt;
+    );
+}
+
+function CancionItem({ cancion }) {
+    return (
+        &lt;div className="cancion-item"&gt;
+            &lt;h3&gt;{cancion.titulo}&lt;/h3&gt;
+            &lt;p&gt;{cancion.artista}&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="note">
+                    <h4>✨ Ventajas de los Frameworks:</h4>
+                    <ul>
+                        <li><strong>State Management:</strong> React/Vue manejan el estado automáticamente</li>
+                        <li><strong>Componentes Reutilizables:</strong> Escribir una vez, usar en muchos lugares</li>
+                        <li><strong>Virtual DOM:</strong> Updates más eficientes que innerHTML</li>
+                        <li><strong>Ecosistema:</strong> Miles de librerías y herramientas</li>
+                    </ul>
+                </div>
+            </details>
+
+            
+                <div class="technical-note">
+                    <h4>🚀 Tu Ventaja Actual:</h4>
+                    <p>Haber construido este CRUD completo te da una <strong>base sólida</strong> para ser Full Stack. Entiendes cómo las piezas encajan juntas, que es la habilidad más valiosa.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recomendaciones Finales -->
+        <section class="card">
+            <h2>💡 Recomendaciones para tu Próximo Paso</h2>
+            
+            <div class="important">
+                <h4>🎯 Mi Recomendación Personal:</h4>
+                <p>Empieza con <strong>migrar a MongoDB</strong>. Es el cambio más pequeño con el mayor impacto. Te dará confianza y experiencia real con bases de datos.</p>
+            </div>
+
+           
         </section>
     </div>
 </body>
