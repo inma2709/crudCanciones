@@ -69,10 +69,10 @@ app.use(express.static(path.join(__dirname, '../frontend')));
  * LEER CANCIONES - Lee las canciones del archivo JSON
  * ¿Qué hace? Abre el archivo canciones.json y convierte su contenido en un array de JavaScript
  */
-function leerCanciones() {
+async function leerCanciones() {
     try {
         // Leer el archivo como texto
-        const contenido = fs.readFileSync(ARCHIVO_CANCIONES, 'utf8');
+        const contenido = await fs.promises.readFile(ARCHIVO_CANCIONES, 'utf8');
         
         // Convertir el texto JSON en un array de JavaScript
         // Express.json analiza (parsea) el cuerpo de las peticiones HTTP que lleguen desde el cliente (frontend).
@@ -125,7 +125,8 @@ app.get('/api/canciones', (peticion, respuesta) => {
  * ¿Qué hace? CREA una nueva canción
  * El navegador nos envía los datos de la nueva canción y nosotros la guardamos
  */
-app.post('/api/canciones', (peticion, respuesta) => {
+
+async function crearCancion(peticion, respuesta) {
     console.log('➕ Solicitud: Crear nueva canción');
     console.log('📦 Datos recibidos:', peticion.body);
     
@@ -141,7 +142,7 @@ app.post('/api/canciones', (peticion, respuesta) => {
     }
     
     // Leer las canciones actuales
-    const canciones = leerCanciones();
+    const canciones =  leerCanciones();
     
     // Crear la nueva canción
     const nuevaCancion = {
@@ -167,7 +168,7 @@ app.post('/api/canciones', (peticion, respuesta) => {
             mensaje: 'Error al guardar la canción en el archivo'
         });
     }
-});
+}
 
 /**
  * GUARDAR CANCIONES - Guarda las canciones en el archivo JSON
@@ -205,7 +206,7 @@ function obtenerSiguienteId(canciones) {
     return idMasAlto + 1;
 }
 
-
+//aqui termina la funcion
 /**
  * RUTA: PUT /api/canciones/:id
  * ¿Qué hace? ACTUALIZA una canción existente

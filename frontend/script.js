@@ -174,7 +174,7 @@ async function obtenerTodasLasCanciones() {
  * ===================
  * Envía los datos de una nueva canción al servidor para que la guarde
  * 
- * @param {object} datosCancion - Objeto con titulo, artista, año
+ * 
  */
 async function crearNuevaCancion(datosCancion) {
     try {

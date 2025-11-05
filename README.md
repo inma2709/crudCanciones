@@ -1,125 +1,214 @@
- 🎵 Ejercicio CRUD Simplificado - Gestión de Canciones
 
- 📝 Descripción del Ejercicio
 
-Este es un ejercicio de CRUD (Create, Read, Update, Delete) diseñado especialmente para  enfrentarse por primera vez a estos conceptos. Los  aprenderán los fundamentos del desarrollo web Full Stack de la forma más sencilla posible.
+---
 
- 🎯 ¿Qué aprenderán los ?
+ 🎵 CRUD Canciones — Gestor Musical con Node.js y Express
 
-- CRUD básico: Crear, Leer, Actualizar y Eliminar datos
-- Comunicación cliente-servidor: Cómo el navegador habla con el servidor
-- API REST : Entender qué son las APIs y cómo funcionan
-- JavaScript básico: Manipulación del DOM y fetch API
-- JSON: Formato de intercambio de datos
-- Express.js: Crear un servidor web 
+> “Detrás de cada línea de código hay una historia de aprendizaje, de ensayo y error, de superación.”
 
- 🏗️ Estructura del Proyecto (Súper )
+---
+
+ 📘 Índice
+
+1. [Descripción General](-descripción-general)
+2. [Tecnologías Utilizadas](-tecnologías-utilizadas)
+3. [Objetivos del Proyecto](-objetivos-del-proyecto)
+4. [Arquitectura y Estructura](-arquitectura-y-estructura)
+5. [Funcionalidades Principales](-funcionalidades-principales)
+6. [Instalación y Ejecución](-instalación-y-ejecución)
+7. [Ejemplo de Datos](-ejemplo-de-datos)
+8. [Aprendizaje y Retos Superados](-aprendizaje-y-retos-superados)
+9. [Conceptos Técnicos Destacados](-conceptos-técnicos-destacados)
+10. [Mejoras Futuras](-mejoras-futuras)
+11. [Resultado Visual](-resultado-visual)
+12. [Conclusión](-conclusión)
+13. [Autora](-autora)
+
+---
+
+ 🚀 Descripción General
+
+CRUD Canciones es una aplicación Full Stack desarrollada como parte del módulo UF1844: Desarrollo de aplicaciones web en el entorno servidor.
+Permite crear, listar, editar y eliminar canciones, gestionadas desde un backend en Node.js y Express y almacenadas en un archivo JSON local.
+
+A través de este proyecto consolidé los fundamentos del desarrollo web moderno:
+la comunicación cliente-servidor, el uso de APIs REST, y la importancia de una documentación clara y profesional.
+
+---
+
+ ⚙️ Tecnologías Utilizadas
+
+| Categoría        | Tecnologías                              |
+| ---------------- | ---------------------------------------- |
+| Frontend     | HTML5, CSS3, JavaScript (DOM, Fetch API) |
+| Backend      | Node.js, Express.js                      |
+| Comunicación | API REST, CORS                           |
+| Persistencia | Archivos JSON                            |
+| Entorno      | Visual Studio Code, Nodemon, GitHub      |
+
+---
+
+ 🎯 Objetivos del Proyecto
+
+* Comprender el flujo completo cliente-servidor con peticiones HTTP reales.
+* Implementar un CRUD funcional utilizando rutas REST en Express.
+* Manejar persistencia de datos con JSON y validación básica.
+* Practicar asincronía y manipulación dinámica del DOM.
+* Documentar el proyecto con un README profesional, útil para reclutadores.
+
+---
+
+ 🧩 Arquitectura y Estructura
 
 ```
-2910ejercicio/
-├── backend/
-│   ├── server.js           🖥️ Servidor con comentarios didácticos
-│   ├── canciones.json      📊 Base de datos  (solo título, artista, año)
-│   └── package.json        📦 Dependencias
-└── frontend/
-    ├── index.html          🌐 Interfaz con comentarios explicativos
-    ├── script.js           ⚡ Lógica explicada paso a paso
-    └── styles.css          🎨 Estilos bonitos
+crudCanciones/
+├── backend/                 🖥️ Lógica del servidor
+│   ├── server.js            Rutas y controladores Express
+│   ├── canciones.json       “Base de datos” local (JSON)
+│   ├── package.json         Dependencias y scripts npm
+│   └── package-lock.json    Versiones exactas
+│
+├── frontend/                🌐 Interfaz de usuario
+│   ├── index.html           Estructura del contenido
+│   ├── script.js            Lógica del cliente (Fetch + DOM)
+│   └── styles.css           Diseño visual y accesible
+│
+└── README.md                Documentación del proyecto
 ```
 
+---
 
+ 🔧 Funcionalidades Principales
 
- 📊 Datos 
+ 🎧 Backend — `server.js`
 
-Cada canción tiene  3 campos:
-- Título: Nombre de la canción
-- Artista: Quien la canta
-- Año: Cuándo se lanzó (optativo)
+| Método     | Ruta                 | Descripción                     |
+| ---------- | -------------------- | ------------------------------- |
+| GET    | `/api/canciones`     | Devuelve todas las canciones    |
+| POST   | `/api/canciones`     | Añade una nueva canción         |
+| PUT    | `/api/canciones/:id` | Actualiza una canción existente |
+| DELETE | `/api/canciones/:id` | Elimina una canción             |
 
- Ejemplos incluidos:
-- La Llorona (Manu Chao, 2001)
-- Mediterráneo (Joan Manuel Serrat, 1971)
-- Con Altura (Rosalía, 2019)
+ 💻 Frontend — `index.html`, `script.js`, `styles.css`
 
- 🔧 Funcionalidades 
+* Lista dinámica de canciones
+* Formulario para añadir o editar
+* Botones con confirmación de eliminación
+* Validaciones simples y mensajes de depuración
+* Estilo limpio y accesible
 
- ✅ Backend (server.js)
-- GET /api/canciones → "Dame todas las canciones"
-- POST /api/canciones → "Guarda esta nueva canción"
-- PUT /api/canciones/:id → "Actualiza esta canción"
-- DELETE /api/canciones/:id → "Borra esta canción"
+---
 
- ✅ Frontend (Interfaz)
-- Ver canciones → Lista  de todas las canciones
-- Agregar canción → Formulario de 3 campos
-- Editar canción → Llenar formulario con datos existentes
-- Eliminar canción → Botón con confirmación
+ ⚡ Instalación y Ejecución
 
- 📚 Comentarios Didácticos Incluidos
+ 🔹 Requisitos previos
 
- �️ server.js
-```javascript
-/* 
- * Este archivo es el SERVIDOR de nuestra aplicación web.
- * Un servidor es como un "camarero digital" que:
- * 1. Escucha cuando alguien le pide algo
- * 2. Busca lo que le piden  
- * 3. Se lo devuelve
- */
+* Node.js ≥ 18
+* Navegador actualizado
+* Visual Studio Code (recomendado)
+
+ 🔹 Pasos para ejecutar
+
+```bash
+ 1️⃣ Clonar el repositorio
+git clone https://github.com/inma2709/crudCanciones.git
+cd crudCanciones/backend
+
+ 2️⃣ Instalar dependencias
+npm install
+
+ 3️⃣ Iniciar el servidor
+npm run dev
+ → Servidor activo en http://localhost:3001/api/canciones
 ```
 
- ⚡ script.js
-```javascript
-/* 
- * JavaScript es como el "cerebro" de la aplicación web:
- * - HTML es el esqueleto (estructura)
- * - CSS es la piel (apariencia)  
- * - JavaScript es el cerebro (comportamiento)
- */
+ 🔹 Abrir el frontend
+
+Abre `frontend/index.html` desde tu navegador
+(o usa “Open with Live Server” en VS Code).
+
+> 💡 Si cambias el puerto, actualiza la variable `API_URL` en `frontend/script.js`.
+
+---
+
+ 📊 Ejemplo de Datos
+
+```json
+[
+  {
+    "id": 1,
+    "titulo": "Mediterráneo",
+    "artista": "Joan Manuel Serrat",
+    "anio": 1971
+  },
+  {
+    "id": 2,
+    "titulo": "Con Altura",
+    "artista": "Rosalía",
+    "anio": 2019
+  }
+]
 ```
 
- 🌐 index.html
-```html
-<!-- 
-FORMULARIO: Donde el usuario escribe los datos de las canciones
-==============================================================
+---
 
+ 🧠 Aprendizaje y Retos Superados
 
- 🎯 Conceptos Clave (Explicados )
+Antes de este proyecto no comprendía del todo cómo se comunican el navegador y el servidor.
+Implementar rutas en Express y trabajar con peticiones Fetch me ayudó a entender el ciclo completo de una API REST.
 
-1. CRUD: Create, Read, Update, Delete - Las 4 operaciones básicas
-2. API: Como un "menú de restaurante" de operaciones disponibles
-3. JSON: Formato que usan las apps para intercambiar datos
-4. Fetch: Forma de pedir datos al servidor desde JavaScript
-5. DOM: El "mapa" de elementos HTML que JavaScript puede manipular
-6. Event Listeners: "Oídos" que escuchan cuando el usuario hace algo
+Aprendí a usar archivos JSON como sistema de persistencia, controlando errores de lectura y escritura, y a manejar los estados HTTP (200, 201, 404, 500) de forma clara.
 
+Este ejercicio marcó un salto técnico y personal:
+pasé de proyectos estáticos (HTML y CSS), a interactivos (JavaScript), y finalmente a una aplicación Full Stack funcional con Node.js y Express.
 
- ✅ Ventajas del ejercicio simplificado:
-- Solo 3 campos por canción (fácil de entender)
-- Comentarios abundantes en cada archivo
-- Conceptos paso a paso explicados didácticamente
-- Código limpio y fácil de seguir
-- Console.log educativos para depuración
-- Errores manejados de forma comprensible
+---
 
- 📖 Archivos como manuales:
-- Cada archivo tiene comentarios que explican qué hace cada parte
-- Comentarios que explican por qué se hace así
-- Ejemplos prácticos en los comentarios
-- Flujo de la aplicación documentado
+ 🧱 Conceptos Técnicos Destacados
 
+* CRUD completo con rutas REST
+* Fetch API para comunicación cliente-servidor
+* Manipulación del DOM dinámica
+* Persistencia local con `fs.promises`
+* Uso de `cors()` y `express.json()`
+* Manejo de errores y validaciones
+* Código comentado, accesible y mantenible
 
+---
 
+ 🔮 Mejoras Futuras
 
+* Conectar con una base de datos real (MongoDB, SQLite).
+* Implementar autenticación de usuarios.
+* Añadir buscador o filtros de canciones.
+* Subir archivos (audio, portada).
+* Mejorar interfaz y accesibilidad (`aria-live`, notificaciones).
+* Desplegar backend (Render) y frontend (Vercel o Netlify).
 
- � Filosofía del Ejercicio
+---
 
-Este ejercicio está diseñado para que  puedan:
+ 🖼️ Resultado Visual
 
-1. Entender los conceptos básicos sin abrumarse
-2. Ver cómo funcionan las cosas paso a paso
-3. Experimentar sin miedo a romper algo
-4. Aprender leyendo código comentado como un libro
-5. Construir confianza para proyectos más complejos
+| ![Vista previa CRUD Canciones](https://raw.githubusercontent.com/inma2709/crudCanciones/main/frontend/preview.png) |
+| :----------------------------------------------------------------------------------------------------------------: |
+|                      *Vista de la interfaz funcionando (añadir, editar y eliminar canciones)*                      |
+
+---
+
+ 🧭 Conclusión
+
+CRUD Canciones es mi primer proyecto Full Stack completo.
+Me permitió integrar los conocimientos de HTML, CSS, JavaScript, Node y Express, y comprender cómo todas las piezas del desarrollo web encajan entre sí.
+
+Además de programar, aprendí a documentar de forma profesional, estructurar el código y reflejar mi progreso de forma clara y ordenada.
+
+---
+
+ ✨ Autora
+
+👩‍💻 María Inmaculada Contreras Iñíguez
+📍 Desarrolladora Web en formación
+📬 [GitHub](https://github.com/inma2709) · [LinkedIn](https://www.linkedin.com/) *(añádelo cuando quieras)*
+
+> “Escuchar es el comienzo, practicar es el camino, repetir es el secreto.” 🎶
 
