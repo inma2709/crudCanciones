@@ -34,6 +34,7 @@ Permite crear, listar, editar y eliminar canciones, gestionadas desde un backend
 A través de este proyecto consolidé los fundamentos del desarrollo web moderno:
 la comunicación cliente-servidor, el uso de APIs REST, y la importancia de una documentación clara y profesional.
 
+
 ---
 
  ⚙️ Tecnologías Utilizadas
@@ -187,13 +188,7 @@ pasé de proyectos estáticos (HTML y CSS), a interactivos (JavaScript), y final
 
 ---
 
- 🖼️ Resultado Visual
-
-| ![Vista previa CRUD Canciones](https://raw.githubusercontent.com/inma2709/crudCanciones/main/frontend/preview.png) |
-| :----------------------------------------------------------------------------------------------------------------: |
-|                      *Vista de la interfaz funcionando (añadir, editar y eliminar canciones)*                      |
-
----
+ 
 
  🧭 Conclusión
 
